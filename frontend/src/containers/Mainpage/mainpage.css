@@ -2,4 +2,7 @@
     height: 92vh;
     width: 100vw;
     background-color: lightblue;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
