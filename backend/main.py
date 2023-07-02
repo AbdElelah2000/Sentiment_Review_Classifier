@@ -3,7 +3,7 @@ import tensorflow as tf
 import tensorflow_hub as hub
 import numpy as np
 
-
+#pipvenv shell to start virtual python env
 
 
 app = Flask(__name__)
