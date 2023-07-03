@@ -1,17 +1,35 @@
-.Navbar-container{
+.Navbar-container {
     text-align: center;
-    background-color: darkblue;
+    background-color: #020024;  /* a deep, space-like blue */
     height: 8vh;
     width: 100vw;
-}
-
-.Navbar-logo {
+  }
+  
+  .Navbar-logo {
     justify-content: center;
     align-items: center;
     padding-top: 1vh;
-}
-
-.Navbar-logo-img {
+  }
+  
+  .Navbar-logo-img {
     height: 6vh;
     width: 10vw;
-}
+    filter: drop-shadow(0 0 1rem #0000ff); /* A subtle glow */
+  }
+  
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+  .Navbar-logo-img {
+    animation: pulse 2s infinite;
+  }
+  
