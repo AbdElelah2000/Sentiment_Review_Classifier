@@ -26,8 +26,9 @@ results = {}
 def background_task(review, job_id):
     review = np.array([review], dtype=object)
     predict = train_model.predict(review)
-    result = predict[0][0] >= 0
-    results[job_id] = bool(result)
+    result = predict[0][0]
+    # Check if the result is closer to 1 or 0
+    results[job_id] = True if result > 0.5 else False
 
 @app.route("/", methods=["GET", "POST"])
 def server():
