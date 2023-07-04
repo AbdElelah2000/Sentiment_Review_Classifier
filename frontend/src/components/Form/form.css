@@ -1,162 +1,172 @@
 body {
-    background: #000000;
-    color: #fff;
-    font-family: Arial, sans-serif;
-  }
-  
-  .app {
-    margin: 0 auto;
-    height: 92vh;
-    padding: 50px;
-    position: relative; /* Add position relative */
-    z-index: 1; /* Add z-index to bring the form to the front */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .form-style {
-    background-color: #000000;
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative; /* Add position relative */
-    z-index: 5; /* Add z-index to bring the form to the front */
-    width: 80%;
-  }
+  background: #000000;
+  color: #fff;
+  font-family: Arial, sans-serif;
+}
 
-  
-  label {
-    font-size: 20px;
-    margin-bottom: 10px;  /* Add some space between the label and input */
-  }
-  
-  textarea {
-    margin-top: 10px;
-    padding: 10px;
-    font-size: 18px;
-    border-radius: 5px;
-    border: none;
-    width: 80%;
-    height: 60px;
-    background: #333;  /* Update input background color */
-    color: #fff;  /* Update input text color */
-    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);  /* Add a subtle box shadow */
-  }
-  
-  button {
-    margin-top: 10px;
-    padding: 10px 20px;
-    font-size: 18px;
-    border: pointer;
-  }
+.app {
+  margin: 0 auto;
+  height: 92vh;
+  padding: 50px;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-style {
+  background: rgb(2, 0, 36);
+  background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgb(0, 4, 81) 100%);
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 5;
+  width: 40%;
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.4);
+}
+
+.button3 {
+  position: relative;
+  display: flex-end;
+  background: #1836e0;
+  border: solid 1px rgb(255, 255, 255);
+  color: white;
+  margin-top: 10px;
+  padding: 10px 20px;
+  font-size: 18px;
+  border: pointer;
+  border-radius: 5px;
+}
+
+.button3:hover {
+  transition: 0.4s ease-in-out;
+  background: radial-gradient(ellipse at center, #1c1c9f 0%, #000000 100%);
+  color: rgb(255, 255, 255);
+  border: pointer;
+}
 
 .loading {
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .loader_img {
-    height: 50px;
-    width: 50px;
+  height: 50px;
+  width: 50px;
 }
 
 .results {
   margin-top: 20px;
-  overflow-y: scroll;
-  max-height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 50%;
+  min-height: 250px; /* Adjust height as needed */
+  gap: 20px; /* Spacing between elements */
 }
 
-.reviewItem {
-  display: grid;
-  grid-gap: 20px;
-  padding: 20px;
-  border: 1px solid #444;
-  border-radius: 4px;
-  background-color: #222;
-  grid-template-columns: 1fr 1fr;
+.results button {
+  z-index: 2; /* Buttons on top of cards */
 }
 
-.review,
-.result {
+.results button {
+  background: #1836e0;
+  border: solid 1px rgb(255, 255, 255);
+  color: white;
+  margin: 0 200px;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: 0.4s ease-in-out;
+}
+
+.results button:hover {
+  background: radial-gradient(ellipse at center, #1c1c9f 0%, #000000 100%);
+  color: rgb(255, 255, 255);
+}
+
+.results button:disabled {
+  background: #999;
+  cursor: not-allowed;
+}
+
+.card {
+  background-color: #053bff28;
   border-radius: 4px;
+  border: 1px solid #ffffff;
   padding: 20px;
-  border: 1px solid #444;
-  background-color: #333;
+  width: 300px;
+  position: absolute;
+  transition: all 0.5s ease-in-out; /* Add transition */
+  opacity: 0;
+  left: 50%; /* Center the card */
+  transform: translateX(-50%); /* Center the card */
+}
+
+.card.active {
+  z-index: 1; /* Active card underneath buttons */
+  opacity: 1; /* Active card opacity: 1 */
+}
+
+.card.in.animate {
+  transform: translateX(-150%);
+  opacity: 0;
+}
+
+.card.out.animate {
+  transform: translateX(50%);
+  opacity: 0;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
 }
 
 .review h3,
 .result h3 {
-  font-size: 16px;
+  text-align: center;
+  font-size: 18px;
   margin-bottom: 10px;
+  color: #ffffff;
 }
 
 .review p,
 .result p {
+
   font-size: 14px;
   margin: 0;
 }
 
-.result {
+.result-box {
+  padding: 10px;
+  border-radius: 5px;
   text-align: center;
+  margin-top: 10px;
 }
 
-.positive {
-  color: #33ff33;
+.positive .result-box {
+  background-color: #33cc33;
+  color: #fff;
+  font-weight: bold; 
 }
 
-.negative {
-  color: red;
+.negative .result-box {
+  background-color: #ff3333;
+  color: #fff;
+  font-weight: bold; 
 }
 
 
-/* For webkit browsers like Chrome and Safari */
-.result-container::-webkit-scrollbar {
-    width: 8px;
-}
-
-.result-container::-webkit-scrollbar-track {
-    background: #1c1c1e;
-}
-
-.result-container::-webkit-scrollbar-thumb {
-    background-color: #43434f;
-    border-radius: 20px;
-    border: 3px solid #1c1c1e;
-}
-
-/* For Firefox */
-.result-container {
-    scrollbar-width: thin;
-    scrollbar-color: #43434f #1c1c1e;
-}
-
-/* For webkit browsers like Chrome and Safari */
-::-webkit-scrollbar {
-    width: 10px;
-}
-
-::-webkit-scrollbar-track {
-    background: #1c1c1e; 
-}
- 
-::-webkit-scrollbar-thumb {
-    background: #43434f; 
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #555; 
-}
-
-/* For Firefox */
-* {
-    scrollbar-width: thin;
-    scrollbar-color: #43434f #1c1c1e;
-}
