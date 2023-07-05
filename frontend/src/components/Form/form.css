@@ -31,25 +31,6 @@ body {
   box-shadow: 0 0 5px rgba(255, 255, 255, 0.4);
 }
 
-.button3 {
-  position: relative;
-  display: flex-end;
-  background: #1836e0;
-  border: solid 1px rgb(255, 255, 255);
-  color: white;
-  margin-top: 10px;
-  padding: 10px 20px;
-  font-size: 18px;
-  border: pointer;
-  border-radius: 5px;
-}
-
-.button3:hover {
-  transition: 0.4s ease-in-out;
-  background: radial-gradient(ellipse at center, #1c1c9f 0%, #000000 100%);
-  color: rgb(255, 255, 255);
-  border: pointer;
-}
 
 .loading {
   margin-top: 20px;
@@ -79,8 +60,6 @@ body {
 }
 
 .results button {
-  background: #1836e0;
-  border: solid 1px rgb(255, 255, 255);
   color: white;
   margin: 0 200px;
   padding: 10px 20px;
@@ -90,10 +69,6 @@ body {
   transition: 0.4s ease-in-out;
 }
 
-.results button:hover {
-  background: radial-gradient(ellipse at center, #1c1c9f 0%, #000000 100%);
-  color: rgb(255, 255, 255);
-}
 
 .results button:disabled {
   background: #999;
@@ -145,7 +120,6 @@ body {
 
 .review p,
 .result p {
-
   font-size: 14px;
   margin: 0;
 }
@@ -160,13 +134,15 @@ body {
 .positive .result-box {
   background-color: #33cc33;
   color: #fff;
-  font-weight: bold; 
+  font-weight: bold;
 }
 
 .negative .result-box {
   background-color: #ff3333;
   color: #fff;
-  font-weight: bold; 
+  font-weight: bold;
 }
 
-
+.file-upload input[type='file'] {
+  display: none;
+}
