@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './form.css';
 import loading_img from '../../assets/loader.svg';
-import { Textarea, Button } from '@nextui-org/react';
+import { Textarea, Button, Spacer } from '@nextui-org/react';
 
 const Form = () => {
   const [review, setReview] = useState('');
@@ -67,8 +67,39 @@ const Form = () => {
       });
   };
 
-  const onFileChange = (event) => {
-    setFile(event.target.files[0]);
+
+    // On file upload (click the upload button)
+    const onFileUpload = () => {
+      const nameFile = file.name.toString().toLowerCase();
+      console.log(nameFile);
+      if (!nameFile.includes(".xlsx")){
+          console.log("WRONG FILE TYPE");
+          return;  // Stops the function execution if it's not the right file type
+      }
+  
+      // Create an object of formData
+      const formData = new FormData();
+  
+      // Update the formData object
+      formData.append(
+          "myFile",
+          file,
+          file.name
+      );
+  
+      // You don't need to manually set 'Content-Type': 'application/x-www-form-urlencoded'
+      // fetch will automatically add the correct content type when using FormData.
+      fetch("http://localhost:5050/upload", {
+          method: 'POST',
+          body: formData
+      })
+      .then((response) => response.text())
+      .then((text) => {
+          console.log(text);
+      })
+      .catch((error) => {
+          console.error('Error:', error);
+      });
   };
 
   return (
@@ -86,15 +117,21 @@ const Form = () => {
           value={review}
           onChange={(event) => setReview(event.target.value)}
         />
-        <div className="button layout">
-          <label className="file-upload">
-            <input type="file" onChange={onFileChange} />
-            <Button color="secondary" type="button">
-              Upload File
-            </Button>
-          </label>
-          <Button color="primary" type="submit">
+        <Spacer y={0.5} />
+        <Button color="primary" type="submit">
             Submit
+        </Button>
+
+        <br />
+        <p>OR</p>
+        <br />
+
+        <div className="layout">
+          <label className="custom-file-upload">
+              <input type="file" onChange={(event) => setFile(event.target.files[0])}/>
+          </label>
+          <Button color="primary" type="submit" onPress={onFileUpload}>
+            Upload File
           </Button>
         </div>
       </form>
@@ -104,8 +141,8 @@ const Form = () => {
         </div>
       ) : (
         <div className="results">
-          <Button color="primary" onClick={() => handleButtonClick('next')} disabled={currentReviewIndex === reviews.length - 1}>
-             &lt;
+          <Button auto color="primary" onClick={() => handleButtonClick('prev')} disabled={currentReviewIndex === 0}>
+            &lt;
           </Button>
           {reviews.length > 0 &&
             reviews.map((review, index) => (
@@ -129,9 +166,10 @@ const Form = () => {
                 </div>
               </div>
             ))}
-        <Button color="primary" onClick={() => handleButtonClick('prev')} disabled={currentReviewIndex === 0}>
-          &gt;
-        </Button>
+
+        <Button auto color="primary" onClick={() => handleButtonClick('next')} disabled={currentReviewIndex === reviews.length - 1}>
+            &gt;
+          </Button>
         </div>
       )}
     </div>

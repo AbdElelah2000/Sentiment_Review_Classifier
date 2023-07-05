@@ -146,3 +146,23 @@ body {
 .file-upload input[type='file'] {
   display: none;
 }
+
+.custom-file-upload {
+  display: inline-block;
+  padding: 6px 6px;
+  margin-bottom: 5px;
+  cursor: pointer;
+}
+
+.custom-file-upload:hover {
+  border: 2px solid #0072f5;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
