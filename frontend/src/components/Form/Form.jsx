@@ -60,10 +60,14 @@ const Form = () => {
           setTimeout(() => checkResult(jobId), 1000);
         } else {
           response.json().then((data) => {
+            
             setResults([data.review, ...results]);
             setLoading(false);
           });
         }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
       });
   };
 
@@ -76,31 +80,32 @@ const Form = () => {
           console.log("WRONG FILE TYPE");
           return;  // Stops the function execution if it's not the right file type
       }
-  
+    
       // Create an object of formData
       const formData = new FormData();
-  
+    
       // Update the formData object
       formData.append(
           "myFile",
           file,
           file.name
       );
-  
+    
       // You don't need to manually set 'Content-Type': 'application/x-www-form-urlencoded'
       // fetch will automatically add the correct content type when using FormData.
       fetch("http://localhost:5050/upload", {
           method: 'POST',
           body: formData
       })
-      .then((response) => response.text())
-      .then((text) => {
-          console.log(text);
+      .then((response) => response.json())
+      .then((data) => {
+          const jobId = data.job_id;
+          checkResult(jobId);
       })
       .catch((error) => {
           console.error('Error:', error);
       });
-  };
+    };
 
   return (
     <div className="app">
