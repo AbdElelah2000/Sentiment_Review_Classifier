@@ -34,7 +34,7 @@ const Form = () => {
       return setLoading(false);
     }
     setLoading(true);
-    fetch('http://127.0.0.1:5050/', {
+    fetch('http://127.0.0.1:5000/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -53,54 +53,58 @@ const Form = () => {
       });
   };
 
-  const checkResult = (jobId) => {
-    fetch(`http://127.0.0.1:5050/result/${jobId}`)
+  const checkResult = (jobId, isFileUpload = false) => {
+    fetch(`http://127.0.0.1:5000/result/${jobId}`)
       .then((response) => {
         if (response.status === 202) {
-          setTimeout(() => checkResult(jobId), 1000);
+          setTimeout(() => checkResult(jobId, isFileUpload), 1000);
         } else {
           response.json().then((data) => {
-            setResults([data.review, ...results]);
+            console.log(data)
+            if (isFileUpload) {
+              setReviews(data.reviews);
+              setResults(data.results);
+            } else {
+              setResults([data.review, ...results]);
+            }
             setLoading(false);
           });
         }
       });
   };
-
-
-    // On file upload (click the upload button)
-    const onFileUpload = () => {
-      const nameFile = file.name.toString().toLowerCase();
-      console.log(nameFile);
-      if (!nameFile.includes(".xlsx")){
-          console.log("WRONG FILE TYPE");
-          return;  // Stops the function execution if it's not the right file type
-      }
   
-      // Create an object of formData
-      const formData = new FormData();
+  const onFileUpload = () => {
+    const nameFile = file.name.toString().toLowerCase();
+    console.log(nameFile);
+    if (!nameFile.includes(".xlsx")){
+        console.log("WRONG FILE TYPE");
+        return;  // Stops the function execution if it's not the right file type
+    }
   
-      // Update the formData object
-      formData.append(
-          "myFile",
-          file,
-          file.name
-      );
+    // Create an object of formData
+    const formData = new FormData();
   
-      // You don't need to manually set 'Content-Type': 'application/x-www-form-urlencoded'
-      // fetch will automatically add the correct content type when using FormData.
-      fetch("http://localhost:5050/upload", {
-          method: 'POST',
-          body: formData
-      })
-      .then((response) => response.text())
-      .then((text) => {
-          console.log(text);
-      })
-      .catch((error) => {
-          console.error('Error:', error);
-      });
+    // Update the formData object
+    formData.append(
+        "myFile",
+        file,
+        file.name
+    );
+  
+    setLoading(true);
+    fetch("http://127.0.0.1:5000/upload", {
+        method: 'POST',
+        body: formData
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      checkResult(data.job_id, true);
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
   };
+  
 
   return (
     <div className="app">
@@ -130,9 +134,9 @@ const Form = () => {
           <label className="custom-file-upload">
               <input type="file" onChange={(event) => setFile(event.target.files[0])}/>
           </label>
-          <Button color="primary" type="submit" onPress={onFileUpload}>
+          <Button color="primary" type="button" onPress={onFileUpload}>
             Upload File
-          </Button>
+        </Button>
         </div>
       </form>
       {loading ? (

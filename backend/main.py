@@ -3,6 +3,7 @@ from werkzeug.utils import secure_filename
 import tensorflow as tf
 import tensorflow_hub as hub
 import numpy as np
+import pandas as pd
 import os
 from dotenv import load_dotenv
 from flask_cors import CORS
@@ -17,7 +18,9 @@ load_dotenv('.venv/.env.local')
 DEBUG = bool(os.getenv('DEBUG'))
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
+# CORS(app)
+
 
 app.config["DEBUG"] = DEBUG
 
@@ -27,12 +30,33 @@ app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024
 # Store results of background jobs here
 results = {}
 
-def background_task(review, job_id):
-    review = np.array([review], dtype=object)
-    predict = train_model.predict(review)
-    result = predict[0][0]
-    # Check if the result is closer to 1 or 0
-    results[job_id] = True if result > 0.5 else False
+def single_review_background_task(review, job_id):
+    try:
+        review = np.array([review], dtype=object)
+        predict = train_model.predict([review])
+        result = predict[0][0]
+        # Check if the result is closer to 1 or 0
+        results[job_id] = {'status': 'done', 'results': True if result > 0.5 else False}
+        # print(results[job_id])
+        return results[job_id]
+    except Exception as e:
+        results[job_id] = {'status': 'error', 'error': str(e)}
+        return results[job_id]
+
+def multiple_reviews_background_task(file_path, job_id):
+    try:
+        df = pd.read_excel(file_path)
+        reviews = df.iloc[:, 0].values
+        predictions = train_model.predict(reviews)
+        results[job_id] = {'status': 'done', 'reviews': reviews.tolist(), 'results': [True if result > 0.5 else False for result in predictions]}
+        return results[job_id]
+    except Exception as e:
+        results[job_id] = {'status': 'error', 'error': str(e)}
+        return results[job_id]
+
+def allowed_file(filename):
+    # check if the file has a valid extension
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'xlsx', 'xls'}
 
 @app.route("/", methods=["GET", "POST"])
 def server():
@@ -42,19 +66,29 @@ def server():
         # Generate a unique job ID
         job_id = str(uuid.uuid4())
         # Start the background task
-        thread = threading.Thread(target=background_task, args=(review, job_id))
+        thread = threading.Thread(target=single_review_background_task, args=(review, job_id))
         thread.start()
         # Immediately return the job ID
         return jsonify({"job_id": job_id})
 
+    
 @app.route("/result/<job_id>")
 def get_result(job_id):
     # Check if the job is done
     if job_id in results:
-        return jsonify({"review": results[job_id]})
+        # print(results[job_id])
+        if results[job_id]['status'] == 'done':
+            if (len(results[job_id]['reviews']) > 1):
+                # This is a multiple reviews job
+                return jsonify({"reviews": results[job_id]['reviews'], "results": results[job_id]['results']})
+            else:
+                # This is a single review job
+                return jsonify({"results": results[job_id]['results']})
+        else:
+            # The job encountered an error
+            return jsonify({"status": "error", "error": results[job_id]['error']}), 400
     else:
         return "Job not done", 202
-
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -74,20 +108,20 @@ def upload_file():
     if not os.path.exists('files'):
         os.makedirs('files')
 
-    file.save(os.path.join('files', filename))
+    file_path = os.path.join('files', filename)
+    file.save(file_path)
 
-    return 'File Uploaded', 200
-
-def allowed_file(filename):
-    # check if the file has a valid extension
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'xlsx', 'xls'}
+    # Generate a unique job ID
+    job_id = str(uuid.uuid4())
+    # Start the background task
+    thread = threading.Thread(target=multiple_reviews_background_task, args=(file_path, job_id))
+    thread.start()
+    # Immediately return the job ID
+    return jsonify({"job_id": job_id})
 
 @app.errorhandler(413)
 def too_large(e):
     return "File is too large", 413
 
-if __name__ == '__main__':
-    app.run(debug=True)
-
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5050)
+    app.run(host="0.0.0.0", port=5000)
