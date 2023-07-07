@@ -7,9 +7,6 @@ name = "pypi"
 flask = "*"
 flask-cors = "*"
 python-dotenv = "*"
-pandas = "*"
-openpyxl = "*"
-xlrd = "*"
 
 [dev-packages]
 
