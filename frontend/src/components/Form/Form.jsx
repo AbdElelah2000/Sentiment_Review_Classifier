@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import './form.css';
 import loading_img from '../../assets/loader.svg';
 import { Textarea, Button, Spacer } from '@nextui-org/react';
+import Modal from '../Modal/Modal';
 
 const Form = () => {
   const [single_review, SetSingleReview] = useState('');
@@ -12,6 +13,9 @@ const Form = () => {
   const [animate, setAnimate] = useState(false);
   const prevReviewIndex = useRef(currentReviewIndex);
   const [file, setFile] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [modalContent, setModalContent] = useState('');
+  const [showButtons, setShowButtons] = useState(false);
 
   useEffect(() => {
     setAnimate(true);
@@ -51,6 +55,8 @@ const Form = () => {
       })
       .catch((error) => {
         console.error('Error:', error);
+        setModalContent('Error: ' + error.message);
+        setShowModal(true);
       });
   };
 
@@ -64,12 +70,14 @@ const Form = () => {
             if (isFileUpload) {
               setReviews(data.reviews.concat(reviews));
               setResults(data.results.concat(results));
+              setShowButtons(true)
               setCurrentReviewIndex(0);
             } 
             else {
               setReviews([data.reviews, ...reviews]);
               setResults([data.results, ...results]);
               setCurrentReviewIndex(0);
+              setShowButtons(true)
             }
             setLoading(false);
           });
@@ -78,11 +86,16 @@ const Form = () => {
   };
   
   const onFileUpload = () => {
+    if(!file) {
+      setModalContent('Error:\nYou Need to choose a file before uploading it.');
+      return setShowModal(true);
+    }
+
     const nameFile = file.name.toString().toLowerCase();
 
     if (!nameFile.includes(".xlsx")){
-        console.log("WRONG FILE TYPE");
-        return;  // Stops the function execution if it's not the right file type
+      setModalContent('Error:\nWrong file type, currently, this app only supports .xlsx excel sheets.');
+      return setShowModal(true);
     }
   
     // Create an object of formData
@@ -150,7 +163,7 @@ const Form = () => {
         </div>
       ) : (
         <div className="results">
-          <Button auto color="primary" onPress={() => handleButtonClick('prev')} disabled={currentReviewIndex === 0}>
+          <Button auto color="primary" onPress={() => handleButtonClick('prev')} disabled={currentReviewIndex === 0} className={`show-button ${showButtons? 'true' : 'false'}`}>
             &lt;
           </Button>
           {reviews.length > 0 &&
@@ -176,12 +189,12 @@ const Form = () => {
               </div>
             ))}
 
-          <Button auto color="primary" onPress={() => handleButtonClick('next')} disabled={currentReviewIndex === reviews.length - 1}>
+          <Button auto color="primary" onPress={() => handleButtonClick('next')} disabled={currentReviewIndex === reviews.length - 1} className={`show-button ${showButtons? 'true' : 'false'}`}>
             &gt;
           </Button>
         </div>
       )}
-
+    <Modal showModal={showModal} setShowModal={setShowModal} modalContent={modalContent} />
     </div>
   );
 };

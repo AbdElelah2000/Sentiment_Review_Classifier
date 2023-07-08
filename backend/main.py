@@ -82,9 +82,9 @@ def get_result(job_id):
             if (not isinstance(results[job_id]['results'], bool)):
                 # This is a multiple reviews job
                 return jsonify({"reviews": results[job_id]['reviews'], "results": results[job_id]['results']})
-            # else:
-            #     # This is a single review job
-            #     return jsonify({"reviews": results[job_id]['reviews'], "results": results[job_id]['results']})
+            else:
+                # This is a single review job
+                return jsonify({"reviews": results[job_id]['reviews'], "results": results[job_id]['results']})
         else:
             # The job encountered an error
             return jsonify({"status": "error", "error": results[job_id]['error']}), 400

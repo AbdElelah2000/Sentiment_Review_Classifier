@@ -71,19 +71,16 @@ $shadows-big: multiple-box-shadow(100);
   .file-download
   {
     position: absolute;
-    top: 38.5vh;
+    top: 38vh;
     right: -12vw;
     height: 15vh;
     width: 12vw;
-    z-index: 2;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     background-color: #053bff28;
-    border-radius: 4px;
-    border: 1px solid #ffffff;
-    overflow-x: visible;
+    z-index: 2;
 
     h3 {
       font-size: 15px;
@@ -94,14 +91,17 @@ $shadows-big: multiple-box-shadow(100);
   .file-download.active {
     transform: translateX(-12vw);
   }
-  
+
   .file-menu {
     position: absolute;
-    top: 38.5vh;
+    top: 38vh;
     right: 0px;
     height: 15vh;
     max-width: 1vw;
+    border-radius: 0px;
     z-index: 2;
+    padding: 5px;
+    margin-top: 1px;
   }
   .file-menu.active{
     transform: translateX(-12vw);

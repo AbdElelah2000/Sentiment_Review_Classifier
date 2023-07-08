@@ -169,3 +169,7 @@ form {
   justify-content: center;
   align-items: center;
 }
+
+.show-button.false {
+  display: none;
+}
