@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, abort
+from flask import Flask, request, jsonify, abort, send_file
 from werkzeug.utils import secure_filename
 import tensorflow as tf
 import tensorflow_hub as hub
@@ -49,7 +49,28 @@ def multiple_reviews_background_task(file_path, job_id):
         df = pd.read_excel(file_path)
         reviews = df.iloc[:, 0].values
         predictions = train_model.predict(reviews)
+        os.remove(file_path)
         results[job_id] = {'status': 'done', 'reviews': reviews.tolist(), 'results': [True if result > 0.5 else False for result in predictions]}
+        return results[job_id]
+    except Exception as e:
+        results[job_id] = {'status': 'error', 'error': str(e)}
+        return results[job_id]
+    
+def download_file_query(getReviews, getResults, job_id):
+    try:
+
+        df = pd.DataFrame({
+            'Review': getReviews,
+            'Analysis': getResults
+        })
+        filename = job_id + ".xlsx"
+        file_path = os.path.join('files', filename)
+
+        # Write the DataFrame to an Excel file
+        df.to_excel(file_path, index=False)
+
+
+        results[job_id] = {'status': 'done', 'file_path': file_path}
         return results[job_id]
     except Exception as e:
         results[job_id] = {'status': 'error', 'error': str(e)}
@@ -77,6 +98,7 @@ def server():
 def get_result(job_id):
     # Check if the job is done
     if job_id in results:
+        # print( job_id)
         # print(results[job_id])
         if results[job_id]['status'] == 'done':
             if (not isinstance(results[job_id]['results'], bool)):
@@ -90,6 +112,18 @@ def get_result(job_id):
             return jsonify({"status": "error", "error": results[job_id]['error']}), 400
     else:
         return "Job not done", 202
+    
+@app.route('/download_file/<job_id>', methods=['GET'])
+def download_excel_file(job_id):
+    if job_id in results and results[job_id]['status'] == 'done':
+        filename = job_id + ".xlsx"
+        file_path = os.path.join('files', filename)
+        if os.path.exists(file_path):
+            return send_file(file_path, as_attachment=True)
+        else:
+            return jsonify({"status": "error", "error": "File does not exist"}), 400
+    else:
+        return jsonify({"status": "error", "error": "Job not done or does not exist"}), 202
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
@@ -120,9 +154,26 @@ def upload_file():
     # Immediately return the job ID
     return jsonify({"job_id": job_id})
 
+@app.route('/download/', methods=['POST'])
+def download_file():
+    if not os.path.exists('files'):
+        os.makedirs('files')
+
+    data = request.get_json()
+    getReviews = data['reviews']
+    getResults = data['results']
+
+    # Generate a unique job ID
+    job_id = str(uuid.uuid4())
+    # Start the background task
+    thread = threading.Thread(target=download_file_query, args=(getReviews, getResults, job_id))
+    thread.start()
+    # Immediately return the job ID
+    return jsonify({"job_id": job_id})
+
 @app.errorhandler(413)
 def too_large(e):
     return "File is too large", 413
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=4500)

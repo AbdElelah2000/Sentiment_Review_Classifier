@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import './form.css';
 import loading_img from '../../assets/loader.svg';
 import { Textarea, Button, Spacer } from '@nextui-org/react';
 import Modal from '../Modal/Modal';
+import { ReviewContext } from '../../contexts/ReviewContext.js';
 
 const Form = () => {
   const [single_review, SetSingleReview] = useState('');
   const [loading, setLoading] = useState(false);
-  const [reviews, setReviews] = useState([]);
-  const [results, setResults] = useState([]);
+  const { reviews, setReviews, results, setResults } = useContext(ReviewContext);
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
   const [animate, setAnimate] = useState(false);
   const prevReviewIndex = useRef(currentReviewIndex);
@@ -38,7 +38,8 @@ const Form = () => {
       return setLoading(false);
     }
     setLoading(true);
-    fetch('http://127.0.0.1:5000/', {
+
+    fetch('http://127.0.0.1:4500/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -49,19 +50,18 @@ const Form = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        setReviews([single_review, ...reviews]);
-        setResults([data.single_result, ...results]);
+        setReviews(prevReviews => [single_review, ...prevReviews]);
+        setResults(prevResults => [data.single_result, ...prevResults]);
         checkResult(data.job_id);
       })
       .catch((error) => {
-        console.error('Error:', error);
-        setModalContent('Error: ' + error.message);
+        setModalContent('Error: An Error has occured with the review submit, please try again later.');
         setShowModal(true);
       });
   };
 
   const checkResult = (jobId, isFileUpload = false) => {
-    fetch(`http://127.0.0.1:5000/result/${jobId}`)
+    fetch(`http://127.0.0.1:4500/result/${jobId}`)
       .then((response) => {
         if (response.status === 202) {
           setTimeout(() => checkResult(jobId, isFileUpload), 1000);
@@ -82,7 +82,11 @@ const Form = () => {
             setLoading(false);
           });
         }
-      });
+      }).catch((error) =>{
+        setModalContent('Error: An Error has occured with the file upload.');
+        setShowModal(true);
+      }
+      );
   };
   
   const onFileUpload = () => {
@@ -110,7 +114,7 @@ const Form = () => {
   
     setLoading(true);
 
-    fetch("http://127.0.0.1:5000/upload", {
+    fetch("http://127.0.0.1:4500/upload", {
         method: 'POST',
         body: formData
     })
