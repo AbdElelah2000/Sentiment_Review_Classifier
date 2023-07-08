@@ -4,7 +4,7 @@ import loading_img from '../../assets/loader.svg';
 import { Textarea, Button, Spacer } from '@nextui-org/react';
 
 const Form = () => {
-  const [review, setReview] = useState('');
+  const [single_review, SetSingleReview] = useState('');
   const [loading, setLoading] = useState(false);
   const [reviews, setReviews] = useState([]);
   const [results, setResults] = useState([]);
@@ -30,7 +30,7 @@ const Form = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!review) {
+    if (!single_review) {
       return setLoading(false);
     }
     setLoading(true);
@@ -40,12 +40,13 @@ const Form = () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        review: review,
+        review: single_review,
       }),
     })
       .then((response) => response.json())
       .then((data) => {
-        setReviews([review, ...reviews]);
+        setReviews([single_review, ...reviews]);
+        setResults([data.single_result, ...results]);
         checkResult(data.job_id);
       })
       .catch((error) => {
@@ -60,12 +61,15 @@ const Form = () => {
           setTimeout(() => checkResult(jobId, isFileUpload), 1000);
         } else {
           response.json().then((data) => {
-            console.log(data)
             if (isFileUpload) {
-              setReviews(data.reviews);
-              setResults(data.results);
-            } else {
-              setResults([data.review, ...results]);
+              setReviews(data.reviews.concat(reviews));
+              setResults(data.results.concat(results));
+              setCurrentReviewIndex(0);
+            } 
+            else {
+              setReviews([data.reviews, ...reviews]);
+              setResults([data.results, ...results]);
+              setCurrentReviewIndex(0);
             }
             setLoading(false);
           });
@@ -75,7 +79,7 @@ const Form = () => {
   
   const onFileUpload = () => {
     const nameFile = file.name.toString().toLowerCase();
-    console.log(nameFile);
+
     if (!nameFile.includes(".xlsx")){
         console.log("WRONG FILE TYPE");
         return;  // Stops the function execution if it's not the right file type
@@ -92,6 +96,7 @@ const Form = () => {
     );
   
     setLoading(true);
+
     fetch("http://127.0.0.1:5000/upload", {
         method: 'POST',
         body: formData
@@ -118,8 +123,8 @@ const Form = () => {
           cols={60}
           status="primary"
           name="Review"
-          value={review}
-          onChange={(event) => setReview(event.target.value)}
+          value={single_review}
+          onChange={(event) => SetSingleReview(event.target.value)}
         />
         <Spacer y={0.5} />
         <Button color="primary" type="submit">
@@ -127,7 +132,7 @@ const Form = () => {
         </Button>
 
         <br />
-        <p>OR</p>
+        <span style={{color: "#0072f5"}}>OR</span>
         <br />
 
         <div className="layout">
@@ -145,7 +150,7 @@ const Form = () => {
         </div>
       ) : (
         <div className="results">
-          <Button auto color="primary" onClick={() => handleButtonClick('prev')} disabled={currentReviewIndex === 0}>
+          <Button auto color="primary" onPress={() => handleButtonClick('prev')} disabled={currentReviewIndex === 0}>
             &lt;
           </Button>
           {reviews.length > 0 &&
@@ -171,11 +176,12 @@ const Form = () => {
               </div>
             ))}
 
-        <Button auto color="primary" onClick={() => handleButtonClick('next')} disabled={currentReviewIndex === reviews.length - 1}>
+          <Button auto color="primary" onPress={() => handleButtonClick('next')} disabled={currentReviewIndex === reviews.length - 1}>
             &gt;
           </Button>
         </div>
       )}
+
     </div>
   );
 };

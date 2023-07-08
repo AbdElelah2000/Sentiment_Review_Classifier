@@ -32,11 +32,12 @@ results = {}
 
 def single_review_background_task(review, job_id):
     try:
+        temp = review
         review = np.array([review], dtype=object)
         predict = train_model.predict([review])
         result = predict[0][0]
         # Check if the result is closer to 1 or 0
-        results[job_id] = {'status': 'done', 'results': True if result > 0.5 else False}
+        results[job_id] = {'status': 'done', 'reviews': str(temp),'results': True if result > 0.5 else False}
         # print(results[job_id])
         return results[job_id]
     except Exception as e:
@@ -58,7 +59,7 @@ def allowed_file(filename):
     # check if the file has a valid extension
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'xlsx', 'xls'}
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/", methods=["POST"])
 def server():
     if request.method == "POST":
         data = request.get_json()
@@ -78,12 +79,12 @@ def get_result(job_id):
     if job_id in results:
         # print(results[job_id])
         if results[job_id]['status'] == 'done':
-            if (len(results[job_id]['reviews']) > 1):
+            if (not isinstance(results[job_id]['results'], bool)):
                 # This is a multiple reviews job
                 return jsonify({"reviews": results[job_id]['reviews'], "results": results[job_id]['results']})
-            else:
-                # This is a single review job
-                return jsonify({"results": results[job_id]['results']})
+            # else:
+            #     # This is a single review job
+            #     return jsonify({"reviews": results[job_id]['reviews'], "results": results[job_id]['results']})
         else:
             # The job encountered an error
             return jsonify({"status": "error", "error": results[job_id]['error']}), 400

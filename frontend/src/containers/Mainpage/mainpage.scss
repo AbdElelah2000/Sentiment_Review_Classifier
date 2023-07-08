@@ -68,4 +68,44 @@ $shadows-big: multiple-box-shadow(100);
       transform: translateY(-2000px);
     }
   }
+  .file-download
+  {
+    position: absolute;
+    top: 38.5vh;
+    right: -12vw;
+    height: 15vh;
+    width: 12vw;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #053bff28;
+    border-radius: 4px;
+    border: 1px solid #ffffff;
+    overflow-x: visible;
+
+    h3 {
+      font-size: 15px;
+      color: #0072f5;
+    }
+  }
+
+  .file-download.active {
+    transform: translateX(-12vw);
+  }
+  
+  .file-menu {
+    position: absolute;
+    top: 38.5vh;
+    right: 0px;
+    height: 15vh;
+    max-width: 1vw;
+    z-index: 2;
+  }
+  .file-menu.active{
+    transform: translateX(-12vw);
+  }
+
 }
+
