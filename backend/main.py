@@ -1,5 +1,7 @@
-from flask import Flask, request, jsonify, abort, send_file
+from flask import Flask, request, jsonify, abort, send_file, Response
 from werkzeug.utils import secure_filename
+from werkzeug.wsgi import FileWrapper
+import shutil
 import tensorflow as tf
 import tensorflow_hub as hub
 import numpy as np
@@ -29,6 +31,10 @@ app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024
 
 # Store results of background jobs here
 results = {}
+
+def capitalize_sentences(sentences):
+    return [sentence.capitalize() for sentence in sentences]
+
 
 def single_review_background_task(review, job_id):
     try:
@@ -85,6 +91,9 @@ def server():
     if request.method == "POST":
         data = request.get_json()
         review = data['review']
+
+        review = review.capitalize()
+
         # Generate a unique job ID
         job_id = str(uuid.uuid4())
         # Start the background task
@@ -119,7 +128,15 @@ def download_excel_file(job_id):
         filename = job_id + ".xlsx"
         file_path = os.path.join('files', filename)
         if os.path.exists(file_path):
-            return send_file(file_path, as_attachment=True)
+            def generate():
+                with open(file_path, "rb") as f:
+                    yield from FileWrapper(f)
+                os.remove(file_path)  # delete the file after sending
+
+            # Wrap the generator in a response and set necessary headers
+            response = Response(generate(), mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+            response.headers.set('Content-Disposition', 'attachment', filename=filename)
+            return response
         else:
             return jsonify({"status": "error", "error": "File does not exist"}), 400
     else:
@@ -163,10 +180,14 @@ def download_file():
     getReviews = data['reviews']
     getResults = data['results']
 
+
+    getReviews = capitalize_sentences(getReviews)
+    newResults = ['Positive' if result else 'Negative' for result in getResults]
+
     # Generate a unique job ID
     job_id = str(uuid.uuid4())
     # Start the background task
-    thread = threading.Thread(target=download_file_query, args=(getReviews, getResults, job_id))
+    thread = threading.Thread(target=download_file_query, args=(getReviews, newResults, job_id))
     thread.start()
     # Immediately return the job ID
     return jsonify({"job_id": job_id})

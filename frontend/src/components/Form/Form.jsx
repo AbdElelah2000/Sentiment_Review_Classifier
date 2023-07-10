@@ -5,6 +5,19 @@ import { Textarea, Button, Spacer } from '@nextui-org/react';
 import Modal from '../Modal/Modal';
 import { ReviewContext } from '../../contexts/ReviewContext.js';
 
+function capitalizeSentence(text) {
+  // Split the text into sentences based on the '. ' separator
+  let sentences = text.split('. ');
+
+  // Capitalize the first character of each sentence
+  for (let i = 0; i < sentences.length; i++) {
+      sentences[i] = sentences[i][0].toUpperCase() + sentences[i].substr(1).toLowerCase();
+  }
+
+  // Join the sentences back together and return the result
+  return sentences.join('. ') + '.';
+}
+
 const Form = () => {
   const [single_review, SetSingleReview] = useState('');
   const [loading, setLoading] = useState(false);
@@ -38,6 +51,8 @@ const Form = () => {
       return setLoading(false);
     }
     setLoading(true);
+    
+    SetSingleReview(capitalizeSentence(single_review))
 
     fetch('http://127.0.0.1:4500/', {
       method: 'POST',
