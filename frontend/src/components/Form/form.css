@@ -6,28 +6,29 @@ body {
 
 .app {
   margin: 0 auto;
-  height: 92vh;
-  padding: 50px;
+  height: 100vh;
+  padding: 1rem;
   position: relative;
   z-index: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start; /* Align items from the top */
   align-items: center;
+  overflow: auto; /* Add overflow auto */
 }
 
 .form-style {
-  background: rgb(2, 0, 36);
   background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgb(0, 4, 81) 100%);
-  padding: 20px;
+  padding: 1rem;
   border-radius: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 2vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
   z-index: 5;
-  width: 40%;
+  width: 90%; /* Lower percentage for smaller screens */
+  max-width: 500px; /* Maximum width for larger screens */
   box-shadow: 0 0 5px rgba(255, 255, 255, 0.4);
 }
 
@@ -48,28 +49,21 @@ form {
 }
 
 .results {
-  margin-top: 20px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   position: relative;
-  width: 50%;
+  flex-direction: row;
+  width: 80%; /* adjust as needed */
   min-height: 250px; /* Adjust height as needed */
-  gap: 20px; /* Spacing between elements */
-}
-
-.results button {
-  z-index: 2; /* Buttons on top of cards */
+  padding: 0 2rem; /* Add horizontal padding */
 }
 
 .results button {
   color: white;
-  margin: 0 200px;
-  padding: 10px 20px;
-  font-size: 14px;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: 0.4s ease-in-out;
+  z-index: 2; /* Buttons on top of cards */
+  flex-shrink: 0; /* Prevent the buttons from shrinking */
+  padding: 10px
 }
 
 
@@ -83,7 +77,11 @@ form {
   border-radius: 4px;
   border: 1px solid #ffffff;
   padding: 20px;
-  width: 300px;
+  width: max-content;
+  min-width: 20%;
+  max-width: 90%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   position: absolute;
   transition: all 0.5s ease-in-out; /* Add transition */
   opacity: 0;
@@ -93,12 +91,28 @@ form {
 
 .card.active {
   z-index: 1; /* Active card underneath buttons */
-  opacity: 1; /* Active card opacity: 1 */
+  opacity: 1;
+  flex-grow: 1;
+  text-align: center;
 }
 
 .card.in.animate {
   transform: translateX(-150%);
   opacity: 0;
+}
+
+.question-row{
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.question-mark-img{
+  padding-left: 5px;
+  height: 3vh;
+  width: 3vh;
+  cursor: pointer;
 }
 
 .card.out.animate {
@@ -116,7 +130,7 @@ form {
 .review h3,
 .result h3 {
   text-align: center;
-  font-size: 18px;
+  font-size: 14px;
   margin-bottom: 10px;
   color: #ffffff;
 }
@@ -128,7 +142,7 @@ form {
 }
 
 .result-box {
-  padding: 10px;
+  padding: 5px;
   border-radius: 5px;
   text-align: center;
   margin-top: 10px;
@@ -144,6 +158,7 @@ form {
   background-color: #ff3333;
   color: #fff;
   font-weight: bold;
+  font-size: 5px;
 }
 
 .file-upload input[type='file'] {
@@ -172,4 +187,11 @@ form {
 
 .show-button.false {
   display: none;
+}
+
+
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
 }

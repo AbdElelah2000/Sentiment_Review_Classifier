@@ -33,3 +33,19 @@
     animation: pulse 2s infinite;
   }
   
+
+  @media (max-width: 1000px) {
+    .Navbar-logo-img {
+      height: 6vh;
+      width: 30vw;
+      filter: drop-shadow(0 0 1rem #0000ff); /* A subtle glow */
+    }
+  }
+
+  @media (max-width: 750px) {
+    .Navbar-logo-img {
+      height: 6vh;
+      width: 45vw;
+      filter: drop-shadow(0 0 1rem #0000ff); /* A subtle glow */
+    }
+  }

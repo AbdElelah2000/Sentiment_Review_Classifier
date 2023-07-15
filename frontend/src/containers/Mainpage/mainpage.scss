@@ -83,7 +83,7 @@ $shadows-big: multiple-box-shadow(100);
     z-index: 2;
 
     h3 {
-      font-size: 15px;
+      font-size: 12px;
       color: #0072f5;
     }
   }
@@ -107,5 +107,33 @@ $shadows-big: multiple-box-shadow(100);
     transform: translateX(-12vw);
   }
 
+  @media (max-width: 768px) {
+    .file-download.active h3{
+      font-size: 11px;
+    }
+    .file-download
+    {
+      top:70vh;
+      right: -25vw;
+      width: 25vw;
+    }
+
+    .file-download.active {
+      transform: translateX(-25vw);
+    }
+    .file-menu{
+      top:70vh;
+    }
+
+
+    .file-menu.active{
+      transform: translateX(-25vw);
+    }
+
+
+  }
+
 }
+
+
 

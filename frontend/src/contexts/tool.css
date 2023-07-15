@@ -1,0 +1,11 @@
+.format-img{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.image-size {
+    height: 15vh;
+    width: auto;
+}

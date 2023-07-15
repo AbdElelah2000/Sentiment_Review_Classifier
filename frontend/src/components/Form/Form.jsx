@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import './form.css';
 import loading_img from '../../assets/loader.svg';
-import { Textarea, Button, Spacer } from '@nextui-org/react';
+import { Textarea, Button, Spacer, Tooltip } from '@nextui-org/react';
 import Modal from '../Modal/Modal';
-import { ReviewContext } from '../../contexts/ReviewContext.js';
+import { ReviewContext } from '../../contexts/ReviewContext';
+import question from '../../assets/question.png'
+import { ToolInfo } from '../../contexts/ToolInfo';
 
 function capitalizeSentence(text) {
   // Split the text into sentences based on the '. ' separator
@@ -159,7 +161,7 @@ const Form = () => {
           onChange={(event) => SetSingleReview(event.target.value)}
         />
         <Spacer y={0.5} />
-        <Button color="primary" type="submit">
+        <Button color="primary" size='sm' type="submit">
             Submit
         </Button>
 
@@ -171,9 +173,16 @@ const Form = () => {
           <label className="custom-file-upload">
               <input type="file" onChange={(event) => setFile(event.target.files[0])}/>
           </label>
-          <Button color="primary" type="button" onPress={onFileUpload}>
-            Upload File
-        </Button>
+          <div className='question-row'>
+            <Button color="primary" size='sm'  type="button" onPress={onFileUpload}>
+              Upload File
+            </Button>
+            <div data-html="true">
+              <Tooltip placement="bottom" color='primary' content={<ToolInfo />}>
+                <img className='question-mark-img' src={question} alt="question-mark" />
+              </Tooltip>
+            </div>
+          </div>
         </div>
       </form>
       {loading ? (
@@ -182,7 +191,7 @@ const Form = () => {
         </div>
       ) : (
         <div className="results">
-          <Button auto color="primary" onPress={() => handleButtonClick('prev')} disabled={currentReviewIndex === 0} className={`show-button ${showButtons? 'true' : 'false'}`}>
+          <Button auto color="primary" size='sm'  onPress={() => handleButtonClick('prev')} disabled={currentReviewIndex === 0} className={`show-button ${showButtons? 'true' : 'false'}`}>
             &lt;
           </Button>
           {reviews.length > 0 &&
@@ -208,7 +217,7 @@ const Form = () => {
               </div>
             ))}
 
-          <Button auto color="primary" onPress={() => handleButtonClick('next')} disabled={currentReviewIndex === reviews.length - 1} className={`show-button ${showButtons? 'true' : 'false'}`}>
+          <Button auto color="primary" size='sm'  onPress={() => handleButtonClick('next')} disabled={currentReviewIndex === reviews.length - 1} className={`show-button ${showButtons? 'true' : 'false'}`}>
             &gt;
           </Button>
         </div>
