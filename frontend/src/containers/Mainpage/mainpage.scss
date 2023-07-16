@@ -73,7 +73,7 @@ $shadows-big: multiple-box-shadow(100);
     position: absolute;
     top: 38vh;
     right: -12vw;
-    height: 15vh;
+    height: 30vh;
     width: 12vw;
     display: flex;
     flex-direction: column;
@@ -96,7 +96,7 @@ $shadows-big: multiple-box-shadow(100);
     position: absolute;
     top: 38vh;
     right: 0px;
-    height: 15vh;
+    height: 30vh;
     max-width: 1vw;
     border-radius: 0px;
     z-index: 2;
@@ -113,7 +113,7 @@ $shadows-big: multiple-box-shadow(100);
     }
     .file-download
     {
-      top:70vh;
+      top:60vh;
       right: -25vw;
       width: 25vw;
     }
@@ -122,7 +122,7 @@ $shadows-big: multiple-box-shadow(100);
       transform: translateX(-25vw);
     }
     .file-menu{
-      top:70vh;
+      top:60vh;
     }
 
 

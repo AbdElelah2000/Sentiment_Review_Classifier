@@ -89,7 +89,7 @@ const Form = () => {
           setTimeout(() => checkResult(jobId, isFileUpload), 1000);
         } 
         else if (response.status === 204) {
-          setModalContent('Error: The format of the excel file is wrong. Please hover over the ? for help.');
+          setModalContent('Error: The format of the excel file is wrong. Please hover over the ? symbol for more information regarding the format of the file.');
           setShowModal(true);
           setLoading(false);
         } 

@@ -12,6 +12,9 @@ const Mainpage = () => {
   const [results, setResults] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [modalContent, setModalContent] = useState('');
+  const [positiveCount, setPositiveCount] = useState(null)
+  const [negativeCount, setNegativeCount] = useState(null)
+
 
   const checkResult = async (jobId) => {
     try {
@@ -41,8 +44,34 @@ const Mainpage = () => {
         setModalContent('Error: An Error has occured with the file upload.');
         setShowModal(true);
     }
-}
+  }
 
+  const stats = () => {
+    if (results.length === 0)
+    {
+      setModalContent('Error: You need to first have a submitted reviews before getting the stats of the results.');
+      return setShowModal(true);
+    }
+
+    var count = 0;
+    for (let i = 0; i < results.length; i++) {
+      if (results[i] === true) {
+        count++;
+      }
+    }
+    setPositiveCount(count)
+
+    count = 0;
+    for (let i = 0; i < results.length; i++) {
+      if (results[i] === false) {
+        count++;
+      }
+    }
+    setNegativeCount(count)
+
+    setModalContent('The statistics of your reviews:');
+    return setShowModal(true);
+  }
 
   const downloadFile = () => {
     if (results.length === 0)
@@ -80,14 +109,14 @@ const Mainpage = () => {
         <div className={`file-download ${pressed ? 'active' : ''}`}>
           <h3>Download Excel Sheet</h3>
           <Button size="xs" onPress={downloadFile}>Get file</Button>
+          <h3>Show The Statistics</h3>
+          <Button size="xs" onPress={stats}>Get Stats</Button>
         </div>
-        <div>
-          <Button auto size="xs" onPress={() => {setPressed(!pressed)}} className={`file-menu ${pressed ? 'active' : ''}`}>
+        <Button auto size="xs" onPress={() => {setPressed(!pressed)}} className={`file-menu ${pressed ? 'active' : ''}`}>
             {pressed ? '>' : "<"}
-          </Button>
-        </div>
+        </Button>
       </div>
-      <Modal showModal={showModal} setShowModal={setShowModal} modalContent={modalContent} />
+      <Modal showModal={showModal} setShowModal={setShowModal} modalContent={modalContent} positiveCount={positiveCount} negativeCount={negativeCount} />
     </ReviewContext.Provider> 
   );
 };

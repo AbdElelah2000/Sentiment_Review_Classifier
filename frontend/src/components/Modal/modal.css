@@ -13,8 +13,6 @@
   }
   
   .modal-wrapper {
-    width: 400px;
-    height: 200px;
     background: rgb(2, 0, 36);
     background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgb(0, 4, 81) 100%);
     color: #000;
@@ -24,13 +22,27 @@
     align-items: center;
     position: relative;
     border-radius: 10px;
-    height: 30vh;
     width: fit-content;
-    
+    padding: 25px; /* Add equal padding to all sides */
+    padding-top: 35px;
+    box-sizing: border-box; /* To include padding and border in the element's total width and height */
   }
-
+  
   .modal-content {
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+  }
+  
+  h1 {
+    color: rgb(255, 0, 85);
+    font-weight: 100;
+    font-size: 15px;
+    margin-bottom: 20px; /* Adjust as needed */
   }
   
   .modal-close-button {
@@ -39,9 +51,15 @@
     right: 10px;
     width: auto;
   }
-  
-  h1{
-    color: rgb(255, 0, 85);
-    font-weight: 100;
-    font-size: 15px;
+
+  .negative-p{
+    font-size: 12px;
+    color: #ff0000;
+    text-align: center;
   }
+  .postive-p{
+    font-size: 12px;
+    color: #00fe2a;
+    text-align: center;
+  }
+  
