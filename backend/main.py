@@ -49,7 +49,6 @@ def capitalize_sentences(sentences):
         capitalized_sentence = '. '.join(capitalized_split_sentence)
         capitalized_sentences.append(capitalized_sentence)
 
-    print(capitalized_sentences)
     # Return string if only one sentence is present, else return list
     if len(capitalized_sentences) == 1:
         return capitalized_sentences[0]
@@ -67,7 +66,7 @@ def single_review_background_task(review, job_id):
         result = predict[0][0]
         # Check if the result is closer to 1 or 0
         results[job_id] = {'status': 'done', 'reviews': str(temp),'results': True if result > 0 else False}
-        # print(results[job_id])
+
         return results[job_id]
     except Exception as e:
         results[job_id] = {'status': 'error', 'error': str(e)}
@@ -76,7 +75,6 @@ def single_review_background_task(review, job_id):
 def multiple_reviews_background_task(file_path, job_id):
     try:
         df = pd.read_excel(file_path)
-        print(df.columns[0].lower())
         if df.columns[0].lower() == "review" or df.columns[0].lower() == "reviews":
             reviews = df.iloc[:, 0].values
             predictions = train_model.predict(reviews)
@@ -88,7 +86,6 @@ def multiple_reviews_background_task(file_path, job_id):
             results[job_id] = {'status': 'format', 'error': 'Error: The format of the excel file is incorrect.'}
             return results[job_id]
     except Exception as e:
-        print(e)
         results[job_id] = {'status': 'error', 'error': str(e)}
         return results[job_id]
     
@@ -137,8 +134,6 @@ def server():
 def get_result(job_id):
     # Check if the job is done
     if job_id in results:
-        # print( job_id)
-        # print(results[job_id])
         if results[job_id]['status'] == 'done':
             if (not isinstance(results[job_id]['results'], bool)):
                 # This is a multiple reviews job
