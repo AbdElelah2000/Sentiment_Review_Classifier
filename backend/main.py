@@ -66,7 +66,7 @@ def single_review_background_task(review, job_id):
         predict = train_model.predict([review])
         result = predict[0][0]
         # Check if the result is closer to 1 or 0
-        results[job_id] = {'status': 'done', 'reviews': str(temp),'results': True if result > 0.5 else False}
+        results[job_id] = {'status': 'done', 'reviews': str(temp),'results': True if result > 0 else False}
         # print(results[job_id])
         return results[job_id]
     except Exception as e:
