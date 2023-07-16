@@ -24,7 +24,8 @@
     align-items: center;
     position: relative;
     border-radius: 10px;
-    height: 15vh;
+    height: 30vh;
+    width: fit-content;
     
   }
 
