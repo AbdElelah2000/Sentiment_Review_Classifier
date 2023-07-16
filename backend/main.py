@@ -33,7 +33,30 @@ app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024
 results = {}
 
 def capitalize_sentences(sentences):
-    return [sentence.capitalize() for sentence in sentences]
+    if isinstance(sentences, str):
+        # Convert single string to list
+        sentences = [sentences]
+
+    capitalized_sentences = []
+
+    for sentence in sentences:
+        # Ensure each string ends with a period
+        if not sentence.endswith('.'):
+            sentence += '.'
+
+        split_sentence = sentence.split('. ')
+        capitalized_split_sentence = [sent.capitalize() for sent in split_sentence]
+        capitalized_sentence = '. '.join(capitalized_split_sentence)
+        capitalized_sentences.append(capitalized_sentence)
+
+    print(capitalized_sentences)
+    # Return string if only one sentence is present, else return list
+    if len(capitalized_sentences) == 1:
+        return capitalized_sentences[0]
+    else:
+        return capitalized_sentences
+
+
 
 
 def single_review_background_task(review, job_id):
@@ -53,12 +76,19 @@ def single_review_background_task(review, job_id):
 def multiple_reviews_background_task(file_path, job_id):
     try:
         df = pd.read_excel(file_path)
-        reviews = df.iloc[:, 0].values
-        predictions = train_model.predict(reviews)
-        os.remove(file_path)
-        results[job_id] = {'status': 'done', 'reviews': reviews.tolist(), 'results': [True if result > 0.5 else False for result in predictions]}
-        return results[job_id]
+        print(df.columns[0].lower())
+        if df.columns[0].lower() == "review" or df.columns[0].lower() == "reviews":
+            reviews = df.iloc[:, 0].values
+            predictions = train_model.predict(reviews)
+            os.remove(file_path)
+            results[job_id] = {'status': 'done', 'reviews': reviews.tolist(), 'results': [True if result > 0.5 else False for result in predictions]}
+            return results[job_id]
+        else:
+            os.remove(file_path)
+            results[job_id] = {'status': 'format', 'error': 'Error: The format of the excel file is incorrect.'}
+            return results[job_id]
     except Exception as e:
+        print(e)
         results[job_id] = {'status': 'error', 'error': str(e)}
         return results[job_id]
     
@@ -92,7 +122,7 @@ def server():
         data = request.get_json()
         review = data['review']
 
-        review = review.capitalize()
+        review = capitalize_sentences(review) 
 
         # Generate a unique job ID
         job_id = str(uuid.uuid4())
@@ -116,6 +146,8 @@ def get_result(job_id):
             else:
                 # This is a single review job
                 return jsonify({"reviews": results[job_id]['reviews'], "results": results[job_id]['results']})
+        elif results[job_id]['status'] == 'format':
+            return jsonify({"status": "format", "error": results[job_id]['error']}), 204
         else:
             # The job encountered an error
             return jsonify({"status": "error", "error": results[job_id]['error']}), 400

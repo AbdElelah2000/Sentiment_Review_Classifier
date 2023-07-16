@@ -8,16 +8,21 @@ import question from '../../assets/question.png'
 import { ToolInfo } from '../../contexts/ToolInfo';
 
 function capitalizeSentence(text) {
+  // Add a period to the text if it's not already there
+  if (!text.endsWith('.')) {
+      text += '.';
+  }
+
   // Split the text into sentences based on the '. ' separator
   let sentences = text.split('. ');
 
   // Capitalize the first character of each sentence
   for (let i = 0; i < sentences.length; i++) {
-      sentences[i] = sentences[i][0].toUpperCase() + sentences[i].substr(1).toLowerCase();
+    sentences[i] = sentences[i][0].toUpperCase() + sentences[i].substr(1).toLowerCase();
   }
 
   // Join the sentences back together and return the result
-  return sentences.join('. ') + '.';
+  return sentences.join('. ');
 }
 
 const Form = () => {
@@ -82,7 +87,13 @@ const Form = () => {
       .then((response) => {
         if (response.status === 202) {
           setTimeout(() => checkResult(jobId, isFileUpload), 1000);
-        } else {
+        } 
+        else if (response.status === 204) {
+          setModalContent('Error: The format of the excel file is wrong. Please hover over the ? for help.');
+          setShowModal(true);
+          setLoading(false);
+        } 
+        else {
           response.json().then((data) => {
             if (isFileUpload) {
               setReviews(data.reviews.concat(reviews));
