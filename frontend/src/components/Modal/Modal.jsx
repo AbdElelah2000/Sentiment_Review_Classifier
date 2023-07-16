@@ -39,8 +39,8 @@ const Modal = ({ showModal, setShowModal, modalContent, positiveCount, negativeC
               {(positiveCount || negativeCount) && (
                   <div>
                     <PieChartComponent positiveCount={positiveCount} negativeCount={negativeCount} />
-                    <p className='postive-p'>Positive: {Math.round((positiveCount/(positiveCount+negativeCount))*100).toFixed(2)}%</p>
-                    <p className='negative-p'>Negative: {Math.round((negativeCount/(positiveCount+negativeCount))*100).toFixed(2)}%</p>
+                    <p className='postive-p'>Positive: {Math.round((positiveCount/(positiveCount+negativeCount))*100).toFixed(1)}%</p>
+                    <p className='negative-p'>Negative: {Math.round((negativeCount/(positiveCount+negativeCount))*100).toFixed(1)}%</p>
                   </div>
               )}
             </div>
