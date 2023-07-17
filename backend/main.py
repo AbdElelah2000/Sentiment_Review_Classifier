@@ -7,7 +7,6 @@ import tensorflow_hub as hub
 import numpy as np
 import pandas as pd
 import os
-from dotenv import load_dotenv
 from flask_cors import CORS
 import threading
 import uuid
@@ -15,16 +14,11 @@ import uuid
 custom_objects = {'KerasLayer': hub.KerasLayer}
 train_model = tf.keras.models.load_model('model/review_classifier.h5', custom_objects=custom_objects)
 
-load_dotenv('.venv/.env.local')
-
-DEBUG = bool(os.getenv('DEBUG'))
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 # CORS(app)
 
-
-app.config["DEBUG"] = DEBUG
 
 # set maximum upload size to 1MB
 app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024
